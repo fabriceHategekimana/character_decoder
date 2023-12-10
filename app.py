@@ -1,5 +1,6 @@
 from torch.utils.data import Dataset
 
+
 class CharDataset(Dataset):
     """
     Emits batches of characters.
@@ -8,9 +9,10 @@ class CharDataset(Dataset):
     """
 
     def __init__(self, config, data):
-
-        chars = ... # get characters from the input data
-        self.stoi = { ch:i for i,ch in enumerate(chars) } # map characters to integer indices
+        chars = ...  # get characters from the input data
+        self.stoi = {
+            ch: i for i, ch in enumerate(chars)
+        }  # map characters to integer indices
 
         ...
 
