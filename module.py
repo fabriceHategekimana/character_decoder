@@ -1,6 +1,8 @@
 import torch
 import torch.nn as nn
 
+# Use the Adam optimizer and the cross-entropy loss.
+
 
 class MultiHeadAttention(nn.Module):
     def __init__(self, d_model, num_heads):
@@ -8,7 +10,7 @@ class MultiHeadAttention(nn.Module):
         self.num_heads = num_heads
         self.head_dim = d_model // num_heads
 
-        # 512
+        # d_model = 512
         self.linear_q = nn.Linear(d_model, d_model)
         self.linear_k = nn.Linear(d_model, d_model)
         self.linear_v = nn.Linear(d_model, d_model)
@@ -16,11 +18,11 @@ class MultiHeadAttention(nn.Module):
         self.linear_out = nn.Linear(d_model, d_model)
 
     def forward(self, query, key, value, mask=None):
-        print("query.shape:", query.shape)
         # query.shape: torch.Size([32, 20, 300])
         # RuntimeError: mat1 and mat2 shapes cannot be multiplied (640x300 and 512x512)
         batch_size, _, _ = query.shape
         Q = (
+            # linear_q = (in:512, out:512)
             self.linear_q(query)
             .view(batch_size, -1, self.num_heads, self.head_dim)
             .transpose(1, 2)
@@ -70,6 +72,9 @@ class PositionwiseFeedforward(nn.Module):
 class DecoderLayer(nn.Module):
     def __init__(self, d_model, num_heads, d_ff, dropout=0.1):
         super(DecoderLayer, self).__init__()
+        # d_model = 512
+        # num_heads = 8
+        # d_ff = 2048
         self.self_attention = MultiHeadAttention(d_model, num_heads)
         self.norm1 = nn.LayerNorm(d_model)
         self.dropout1 = nn.Dropout(dropout)
@@ -79,6 +84,8 @@ class DecoderLayer(nn.Module):
         self.dropout2 = nn.Dropout(dropout)
 
     def forward(self, x, mask=None):
+        # File ~/sessions/projet/deep_learning/projet/module.py:84, in DecoderLayer.forward(self, x, mask)
+        # x.shape: torch.Size([32, 20, 300])
         attention_output = self.self_attention(x, x, x, mask)
         x = x + self.dropout1(attention_output)
         x = self.norm1(x)
@@ -93,12 +100,14 @@ class DecoderLayer(nn.Module):
 class TransformerDecoder(nn.Module):
     def __init__(self, num_layers, d_model, num_heads, d_ff, output_size, dropout=0.1):
         super(TransformerDecoder, self).__init__()
+        # d_model: 512
         self.layers = nn.ModuleList(
             [DecoderLayer(d_model, num_heads, d_ff, dropout) for _ in range(num_layers)]
         )
         self.output_projection = nn.Linear(d_model, output_size)
 
     def forward(self, x, mask=None):
+        # x.shape: torch.Size([32, 20, 300])
         for layer in self.layers:
             x = layer(x, mask)
         output = self.output_projection(x)
@@ -117,7 +126,7 @@ decoder = TransformerDecoder(num_layers, d_model, num_heads, d_ff, output_size)
 # # Exemple d'entrée
 batch_size = 32
 seq_length = 20
-embedding_size = 300
+embedding_size = 300 # TODO modify
 input_data = torch.randn((batch_size, seq_length, embedding_size))
 
 # Appliquer le décodeur
