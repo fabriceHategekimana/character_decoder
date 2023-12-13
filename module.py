@@ -126,10 +126,9 @@ decoder = TransformerDecoder(num_layers, d_model, num_heads, d_ff, output_size)
 # # Exemple d'entrée
 batch_size = 32
 seq_length = 20
-embedding_size = 300 # TODO modify
+embedding_size = 512 # TODO modify
 input_data = torch.randn((batch_size, seq_length, embedding_size))
 
 # Appliquer le décodeur
 output = decoder(input_data)
-# 
-# print("Output shape:", output.shape)
+print("Output shape:", output.shape)
