@@ -77,7 +77,7 @@ class DecoderLayer(nn.Module):
         # d_ff = 2048
         self.self_attention = MultiHeadAttention(d_model, num_heads)
         self.norm1 = nn.LayerNorm(d_model)
-        self.dropout1 = nn.Dropout(dropout)
+        self.dropout1 = nn.Dropout(dropout)  # reduce overfitting
 
         self.feedforward = PositionwiseFeedforward(d_model, d_ff, dropout)
         self.norm2 = nn.LayerNorm(d_model)
@@ -98,11 +98,13 @@ class DecoderLayer(nn.Module):
 
 
 class TransformerDecoder(nn.Module):
-    def __init__(self, num_layers, d_model, num_heads, d_ff, output_size, dropout=0.1):
+    def __init__(self, num_layers, d_model, num_heads, d_ff,
+                 output_size, dropout=0.1):
         super(TransformerDecoder, self).__init__()
         # d_model: 512
         self.layers = nn.ModuleList(
-            [DecoderLayer(d_model, num_heads, d_ff, dropout) for _ in range(num_layers)]
+            [DecoderLayer(d_model, num_heads, d_ff, dropout)
+             for _ in range(num_layers)]
         )
         self.output_projection = nn.Linear(d_model, output_size)
 
@@ -123,10 +125,10 @@ output_size = 1000  # Taille de la sortie, à adapter à votre tâche
 
 decoder = TransformerDecoder(num_layers, d_model, num_heads, d_ff, output_size)
 
-# # Exemple d'entrée
+# Exemple d'entrée
 batch_size = 32
 seq_length = 20
-embedding_size = 512 # TODO modify
+embedding_size = 512
 input_data = torch.randn((batch_size, seq_length, embedding_size))
 
 # Appliquer le décodeur
