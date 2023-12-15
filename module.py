@@ -2,8 +2,6 @@ import torch
 import torch.nn as nn
 
 # Use the Adam optimizer and the cross-entropy loss.
-
-
 class MultiHeadAttention(nn.Module):
     def __init__(self, d_model, num_heads):
         super(MultiHeadAttention, self).__init__()
@@ -114,23 +112,3 @@ class TransformerDecoder(nn.Module):
             x = layer(x, mask)
         output = self.output_projection(x)
         return output
-
-
-# Exemple d'utilisation
-d_model = 512
-num_heads = 8
-d_ff = 2048
-num_layers = 6
-output_size = 1000  # Taille de la sortie, à adapter à votre tâche
-
-decoder = TransformerDecoder(num_layers, d_model, num_heads, d_ff, output_size)
-
-# Exemple d'entrée
-batch_size = 32
-seq_length = 20
-embedding_size = 512
-input_data = torch.randn((batch_size, seq_length, embedding_size))
-
-# Appliquer le décodeur
-output = decoder(input_data)
-print("Output shape:", output.shape)
