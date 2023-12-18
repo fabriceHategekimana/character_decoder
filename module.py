@@ -19,7 +19,9 @@ class PositionalEncoding(nn.Module):
 
     def forward(self, x):
         # x : (batch_size, sequence_length, d_model)
-        return x + self.positional_encoding[:, : x.size(1)].detach()
+        res = self.positional_encoding[:, : x.size(1)].detach()
+        print("res.shape:", res.shape)
+        return x + res
 
 
 class CausalSelfAttention(nn.Module):
@@ -110,25 +112,15 @@ class TransformerDecoder(nn.Module):
         self.LM_Head = nn.Linear(d_model, vocab_size)
 
     def forward(self, idx):
-        B, T = idx.shape
-        pos = torch.arange(0, T).unsqueeze(0).repeat(B, 1)
+        # pos = torch.arange(0, T).unsqueeze(0).repeat(B, 1)
         tok_emb = self.WTE(idx)
-        pos_emb = self.WPE(pos)
+        pos_emb = self.WPE(tok_emb)
         x = self.dropout(tok_emb + pos_emb)
         for block in self.Blocks:
             x = block(x)
         x = self.Final_LayerNorm(x)
         return self.LM_Head(x)  # logit
 
-
-# Example usage d_model = 768 TODO
-# model = TransformerDecoder(vocab_size=10,
-                           # d_model=128,
-                           # n_layers=12,
-                           # n_heads=8,
-                           # d_ff=100,
-                           # max_len=512,
-                           # dropout=0.1)
 
 # Input tensor (replace with actual data) vocabsize = 10
 # input_idx: torch.Size([32, 128])
@@ -140,3 +132,32 @@ class TransformerDecoder(nn.Module):
 # logits = model(input_idx, positional_idx)
 # print(logits.shape)
 # torch.Size([128, 128, 10])
+
+
+d_model = 128
+n_layers = 12
+n_heads = 8
+d_ff = 100
+max_len = 512
+dropout = 0.1
+vocab_size = 10
+
+model = TransformerDecoder(vocab_size=10,
+                           d_model=128,
+                           n_layers=12,
+                           n_heads=8,
+                           d_ff=100,
+                           max_len=512,
+                           dropout=0.1)
+
+a = torch.randint(0, 10, (1, 5))
+model(a)
+# WPE = PositionalEncoding(d_model, max_len)
+# x = torch.randint(0, 10, (32, 23, 128))
+# res = WPE(x)
+
+# WTE = nn.Embedding(vocab_size, d_model)
+# x = torch.randint(0, 10, (32, 10))
+# res = WTE(torch.tensor(x))
+# print("res.shape:", res.shape)
+# Token encoding
