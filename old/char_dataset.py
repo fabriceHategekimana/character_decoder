@@ -25,8 +25,7 @@ class CharDataset(Dataset):
         return chunk_tensor[:-1], chunk_tensor[1:]
 
     def to_string(self, integers):
-        return "".join([self.itos[e.item()] for e in integers])
+        return [self.itos[e.item()] for e in integers]
 
     def to_integer(self, string):
-        return torch.tensor([self.stoi[e] for e in string])
-
+        return [self.itos[e] for e in string]

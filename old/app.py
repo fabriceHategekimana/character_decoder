@@ -20,3 +20,8 @@ input_data = torch.randn(
 # Appliquer le décodeur
 output = decoder(input_data)
 print("Output shape:", output.shape)
+
+context = """We are accounted poor citizens, the patricians good.
+What authority surfeits on would relieve us: if they
+would yield us but the"""
+len(context)
