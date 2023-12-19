@@ -136,6 +136,7 @@ class TransformerDecoder(nn.Module):
 
             x = self.Final_LayerNorm(x)
             generated_tokens = self.LM_Head(x)
-            generated_tokens = generated_tokens[:, -num_tokens_to_generate:]
+            generated_tokens = F.softmax(generated_tokens, dim=2)
+            generated_tokens = torch.argmax(generated_tokens, dim=2)
         self.train()
         return generated_tokens
