@@ -139,5 +139,3 @@ class TransformerDecoder(nn.Module):
             generated_tokens = generated_tokens[:, -num_tokens_to_generate:]
         self.train()
         return generated_tokens
-    
-
